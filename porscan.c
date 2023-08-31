@@ -169,29 +169,37 @@ int main() {
                 break;
             }
             case 3: {
-            printf("Starting port: ");
-            scanf("%d", &start_port);
-            printf("Ending port: ");
-            scanf("%d", &end_port);
+                printf("Starting port: ");
+                scanf("%d", &start_port);
+                printf("Ending port: ");
+                scanf("%d", &end_port);
 
-            pthread_t threads[end_port - start_port + 1];
+                pthread_t threads[50];  // Maximum 50 threads at a time
 
-            int thread_count = 0;
-            for (port = start_port; port <= end_port; port++) {
-                ThreadArgs *args = malloc(sizeof(ThreadArgs));
-                args->host = host;
-                args->port = port;
-                pthread_create(&threads[thread_count], NULL, thread_check_port, args);
-                thread_count++;
+                for (port = start_port; port <= end_port;) {
+                    int thread_count = 0;
+
+                    for (int i = 0; i < 50 && port <= end_port; i++) {
+                        ThreadArgs *args = malloc(sizeof(ThreadArgs));
+                        args->host = host;
+                        args->port = port;
+                        pthread_create(&threads[i], NULL, thread_check_port, args);
+                        thread_count++;
+                        port++;
+                    }
+
+                    for (int i = 0; i < thread_count; i++) {
+                        pthread_join(threads[i], NULL);
+                    }
+
+                    if (port <= end_port) {
+                        sleep(3);  // second pause
+                    }
+                }
+
+                printf("Port scan completed.\n");
+                break;
             }
-
-            for (int i = 0; i < thread_count; i++) {
-                pthread_join(threads[i], NULL);
-            }
-
-            printf("Port scan completed.\n");
-            break;
-        }
             case 4:
                 exit(0);
             default:
