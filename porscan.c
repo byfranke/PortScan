@@ -174,7 +174,7 @@ int main() {
                 printf("Ending port: ");
                 scanf("%d", &end_port);
 
-                pthread_t threads[50];  // Maximum 50 threads at a time
+                pthread_t threads[100];  // Maximum threads at a time
 
                 for (port = start_port; port <= end_port;) {
                     int thread_count = 0;
@@ -193,7 +193,7 @@ int main() {
                     }
 
                     if (port <= end_port) {
-                        sleep(3);  // second pause
+                        sleep(1);  // second pause
                     }
                 }
 
