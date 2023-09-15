@@ -10,6 +10,11 @@
 #include <errno.h>
 #include <pthread.h>
 
+#define MAX_THREADS 100
+
+char *ip_address = NULL;
+char *host_name = NULL;
+
 void print_banner() {
     printf("\n");
     printf("     _ \\               |     ___| \n");
@@ -94,21 +99,111 @@ void print_menu() {
     printf("[4] Exit\n");
 }
 
+// main task
 typedef struct {
     char *host;
     int port;
-} ThreadArgs;
+} Task;
+
+// task queue
+typedef struct {
+    Task *tasks[MAX_THREADS];
+    int front;
+    int rear;
+    pthread_mutex_t mutex;
+    pthread_cond_t not_empty;
+} TaskQueue;
+
+void initTaskQueue(TaskQueue *queue) {
+    queue->front = -1;
+    queue->rear = -1;
+    pthread_mutex_init(&queue->mutex, NULL);
+    pthread_cond_init(&queue->not_empty, NULL);
+}
+
+int enqueueTask(TaskQueue *queue, Task *task) {
+    pthread_mutex_lock(&queue->mutex);
+    if (queue->rear == MAX_THREADS - 1) {
+        pthread_mutex_unlock(&queue->mutex);
+        return -1; // full queue
+    }
+
+    if (queue->front == -1) {
+        queue->front = 0;
+    }
+
+    queue->rear++;
+    queue->tasks[queue->rear] = task;
+    pthread_cond_signal(&queue->not_empty);
+    pthread_mutex_unlock(&queue->mutex);
+    return 0;
+}
+
+Task *dequeueTask(TaskQueue *queue) {
+    pthread_mutex_lock(&queue->mutex);
+    while (queue->front == -1) {
+        pthread_cond_wait(&queue->not_empty, &queue->mutex);
+    }
+
+    Task *task = queue->tasks[queue->front];
+    queue->front++;
+
+    if (queue->front > queue->rear) {
+        queue->front = queue->rear = -1;
+    }
+
+    pthread_mutex_unlock(&queue->mutex);
+    return task;
+}
 
 void *thread_check_port(void *args) {
-    ThreadArgs *targs = (ThreadArgs *)args;
+    Task *targs = (Task *)args;
     int result = check_port(targs->host, targs->port);
     if (result == 0) {
         printf("Port %d is open.\n", targs->port);
+
+        // reverse dns lookup
+        struct sockaddr_in sa;
+        sa.sin_addr.s_addr = inet_addr(targs->host);
+        struct hostent *host_info = gethostbyaddr(
+            (void *)&sa.sin_addr, 
+            sizeof sa.sin_addr, 
+            AF_INET
+        );
+
+        if (host_info != NULL) {
+            if (ip_address == NULL) {
+                // changing the state 'ip_address'
+                ip_address = strdup(targs->host);
+            }
+            
+            if (host_name == NULL) {
+                // changing the state 'host_name'
+                host_name = strdup(host_info->h_name);
+            }
+        } else {
+            switch (h_errno) {
+                case HOST_NOT_FOUND:
+                    printf("Host not found.\n");
+                    break;
+                case NO_ADDRESS:
+                    printf("No IP address found for the given host.\n");
+                    break;
+                case NO_RECOVERY:
+                    printf("A non-recoverable error occurred.\n");
+                    break;
+                case TRY_AGAIN:
+                    printf("Temporary DNS error; try again later.\n");
+                    break;
+                default:
+                    printf("Error resolving host name.\n");
+                    break;
+            }
+        }
     }
     free(args);
     return NULL;
 }
-
 
 int main() {
     char domain[100];
@@ -126,82 +221,95 @@ int main() {
         return 1;
     }
 
+    TaskQueue taskQueue;
+    initTaskQueue(&taskQueue);
+
+    pthread_t threads[MAX_THREADS];
+
     while (1) {
         print_menu();
         printf("Option: ");
         scanf("%d", &choice);
 
         switch (choice) {
-        case 1: {
-            int common_ports[] = {21, 22, 23, 25, 53, 80, 110, 135, 143, 443, 587, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080};
-            char *services[] = {
-                "FTP", "SSH", "Telnet", "SMTP", "DNS", "HTTP", "POP3", "MS RPC", 
-                "IMAP", "HTTPS", "SMTP (TLS)", "IMAPS", "POP3S", "Microsoft SQL Server", 
-                "MySQL", "RDP", "PostgreSQL", "VNC", "HTTP Proxy"
-            };
+            case 1: {
+                int common_ports[] = {21, 22, 23, 25, 53, 80, 110, 135, 143, 443, 587, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080};
+                char *services[] = {
+                    "FTP", "SSH", "Telnet", "SMTP", "DNS", "HTTP", "POP3", "MS RPC", 
+                    "IMAP", "HTTPS", "SMTP (TLS)", "IMAPS", "POP3S", "Microsoft SQL Server", 
+                    "MySQL", "RDP", "PostgreSQL", "VNC", "HTTP Proxy"
+                };
 
-            pthread_t threads[sizeof(common_ports) / sizeof(common_ports[0])];
+                for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
+                    Task *task = (Task *)malloc(sizeof(Task));
+                    task->host = host;
+                    task->port = common_ports[i];
+                    enqueueTask(&taskQueue, task);
+                }
 
-            for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
-                ThreadArgs *args = malloc(sizeof(ThreadArgs));
-                args->host = host;
-                args->port = common_ports[i];
-                pthread_create(&threads[i], NULL, thread_check_port, args);
+                int num_threads = sizeof(common_ports) / sizeof(common_ports[0]);
+                for (int i = 0; i < num_threads; i++) {
+                    pthread_create(&threads[i], NULL, thread_check_port, dequeueTask(&taskQueue));
+                }
+
+                for (int i = 0; i < num_threads; i++) {
+                    pthread_join(threads[i], NULL);
+                }
+
+                if (ip_address != NULL && host_name != NULL) {
+                    printf("Reverse DNS lookup...\n");
+                    sleep(1);
+                    printf("IP Address: %s\n", ip_address);
+                    printf("Host Name: %s\n", host_name);
+                }
+
+                printf("Port scan completed.\n");
+                break;
             }
-
-            for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
-                pthread_join(threads[i], NULL);
-            }
-
-            printf("Port scan completed.\n");
-            break;
-        }
 
             case 2: {
                 printf("Port number to check: ");
                 scanf("%d", &port);
-                result = check_port(host, port);
-                if (result == 0) {
-                    printf("Port %d is open.\n", port);
-                } else {
-                    printf("Port %d is closed.\n", port);
-                }
+                Task *task = (Task *)malloc(sizeof(Task));
+                task->host = host;
+                task->port = port;
+                enqueueTask(&taskQueue, task);
+
+                pthread_create(&threads[0], NULL, thread_check_port, dequeueTask(&taskQueue));
+                pthread_join(threads[0], NULL);
+
                 break;
             }
+
             case 3: {
                 printf("Starting port: ");
                 scanf("%d", &start_port);
                 printf("Ending port: ");
                 scanf("%d", &end_port);
 
-                pthread_t threads[100];  // Maximum threads at a time
+                for (port = start_port; port <= end_port; port++) {
+                    Task *task = (Task *)malloc(sizeof(Task));
+                    task->host = host;
+                    task->port = port;
+                    enqueueTask(&taskQueue, task);
+                }
 
-                for (port = start_port; port <= end_port;) {
-                    int thread_count = 0;
+                int num_threads = (end_port - start_port) + 1;
+                for (int i = 0; i < num_threads; i++) {
+                    pthread_create(&threads[i], NULL, thread_check_port, dequeueTask(&taskQueue));
+                }
 
-                    for (int i = 0; i < 50 && port <= end_port; i++) {
-                        ThreadArgs *args = malloc(sizeof(ThreadArgs));
-                        args->host = host;
-                        args->port = port;
-                        pthread_create(&threads[i], NULL, thread_check_port, args);
-                        thread_count++;
-                        port++;
-                    }
-
-                    for (int i = 0; i < thread_count; i++) {
-                        pthread_join(threads[i], NULL);
-                    }
-
-                    if (port <= end_port) {
-                        sleep(1);  // second pause
-                    }
+                for (int i = 0; i < num_threads; i++) {
+                    pthread_join(threads[i], NULL);
                 }
 
                 printf("Port scan completed.\n");
                 break;
             }
+
             case 4:
                 exit(0);
+            
             default:
                 printf("Invalid choice. Please choose a valid option (1, 2, 3, or 4).\n");
         }
