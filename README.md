@@ -28,5 +28,4 @@ portscan
 ```
 
 # Example
-![image](https://github.com/byfranke/portscan/assets/131370932/5eaa6adb-045b-4756-a7c3-e9f22f55fba5)
 
