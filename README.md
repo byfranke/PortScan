@@ -62,11 +62,11 @@ cd portscan
 ```
 Step : 3 For installing tools in directory
 ```
-bash installer.sh or installer_beta.sh
+bash installer.sh
 ```
 Step : 4 Run
 ```
-portscan or portscan_beta
+portscan
 ```
 # PortScan for Windows
 
