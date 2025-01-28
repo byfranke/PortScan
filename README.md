@@ -10,19 +10,21 @@ Ensure you have the necessary C libraries and compilers set up correctly for Por
 # Update Beta
 
 **Major Improvements Applied:**
-Input Validation: Added validation for ports and menu choices.
 
-IPv6 Support: The resolve_domain and check_port functions have been updated to support IPv6.
 
-Thread Limitation: The maximum number of concurrent threads has been limited to 50.
+**Input Validation:** Added validation for ports and menu choices.
 
-Memory Release: Added memory release to prevent leaks.
+**IPv6 Support:** The resolve_domain and check_port functions have been updated to support IPv6.
 
-Configurable Timeout: The check_port function now allows you to configure the timeout.
+**Thread Limitation:** The maximum number of concurrent threads has been limited to 50.
 
-Readability Improvements: The code has been divided into smaller, clearer functions.
+**Memory Release:** Added memory release to prevent leaks.
 
-Error Handling: Added more error handling to increase robustness.
+**Configurable Timeout:** The check_port function now allows you to configure the timeout.
+
+**Readability Improvements:** The code has been divided into smaller, clearer functions.
+
+**Error Handling:** Added more error handling to increase robustness.
 
 # Installation For Linux
 
