@@ -7,6 +7,23 @@ Incorporating multithreading techniques, PortScan v0.2 accelerates the scanning 
 
 Ensure you have the necessary C libraries and compilers set up correctly for PortScan v0.2 to run efficiently. Unauthorized port scanning can be illegal and an infringement on others' privacy and security. Always secure the proper authorization before initiating such actions.
 
+# Update Beta
+
+**Major Improvements Applied:**
+Input Validation: Added validation for ports and menu choices.
+
+IPv6 Support: The resolve_domain and check_port functions have been updated to support IPv6.
+
+Thread Limitation: The maximum number of concurrent threads has been limited to 50.
+
+Memory Release: Added memory release to prevent leaks.
+
+Configurable Timeout: The check_port function now allows you to configure the timeout.
+
+Readability Improvements: The code has been divided into smaller, clearer functions.
+
+Error Handling: Added more error handling to increase robustness.
+
 # Installation For Linux
 
 Step : 1 Download
@@ -20,11 +37,11 @@ cd portscan
 ```
 Step : 3 For installing tools in directory
 ```
-bash installer.sh
+bash installer.sh or installer_beta.sh
 ```
 Step : 4 Run
 ```
-portscan
+portscan or port_scanner_beta
 ```
 # PortScan for Windows
 
