@@ -1,36 +1,53 @@
 # About PortScan
 
-# Update PortScan v0.2 
+The "PortScan" program is a C tool that scans ports on a domain or IP. Users can choose to check common ports, a specific one, or a range. It employs multithreading for speed. After each scan, it displays the port status and asks if the user wants to continue.
+
+**Update PortScan v0.2**
 
 Release: Aug 31, 2023
 
-PortScan v0.2 is a tool written in C, designed to determine open ports on a given system. It functions by sending data packets to different ports and evaluating the responses received. Depending on the response, it deduces whether a port is open (accessible) or closed (unreachable).
+Description:
+PortScan v0.2 is a tool written in C to determine open ports on a target system by sending data packets to various ports and analyzing their responses. The tool utilizes C's native socket capabilities for sending and receiving packets, allowing it to infer whether a port is open or closed based on the system's reply.
 
-The program harnesses C's native socket capabilities for creating connections and dispatching packets to the target ports. If a port is receptive, the system will respond with a packet; otherwise, the program gets no response.
+Key Features:
 
-Incorporating multithreading techniques, PortScan v0.2 accelerates the scanning process by concurrently checking multiple ports, ensuring efficiency.
+Socket Programming: Leverages C's socket library for creating connections and sending packets to target ports.
+Port Status Identification: Deduction of port states (open or closed) based on response packets.
+Multithreading: Uses multithreading to accelerate the scanning process by concurrently testing multiple ports, significantly increasing efficiency.
+Usage Requirements:
+Ensure you have the necessary C libraries and compilers correctly set up.
+Note: Unauthorized port scanning may violate legal and privacy standards. Obtain proper authorization before using this tool.
 
-Ensure you have the necessary C libraries and compilers set up correctly for PortScan v0.2 to run efficiently. Unauthorized port scanning can be illegal and an infringement on others' privacy and security. Always secure the proper authorization before initiating such actions.
+**Update PortScan Beta v1.0**
 
-# Update PortScan Beta V 1.0 
+Release: Jan 28, 2025
 
-Release: 28 jan 2025
+Description:
+PortScan Beta v1.0 builds upon the capabilities of version 0.2 with enhanced functionality, reliability, and support for IPv6. This version introduces significant improvements to usability, performance, and code clarity.
 
-**Major Improvements Applied:**
+Key Features and Improvements:
 
-**Input Validation:** Added validation for ports and menu choices.
+Input Validation: Added validation for user input, including ports and menu options, to ensure correct operation and prevent invalid values.
+IPv6 Support: Functions resolve_domain and check_port now support IPv6 addresses, expanding compatibility beyond IPv4.
+Thread Limitation: Maximum concurrent threads limited to 50 to optimize resource usage and prevent system overload.
+Memory Management: Implemented memory release mechanisms to prevent memory leaks during execution.
+Configurable Timeout: check_port now supports configurable timeouts, allowing users to adjust the wait time for responses from scanned ports.
+Improved Code Readability: Code refactored into smaller, modular functions for better readability and maintenance.
+Enhanced Error Handling: Increased robustness with additional error handling for socket failures and invalid operations.
+Usage Requirements:
+Ensure all required libraries and compilers are set up correctly.
+Note: Unauthorized port scanning remains subject to legal and ethical considerations. Always secure proper authorization.
 
-**IPv6 Support:** The resolve_domain and check_port functions have been updated to support IPv6.
+**Summary of Changes from v0.2 to Beta v1.0:**
 
-**Thread Limitation:** The maximum number of concurrent threads has been limited to 50.
-
-**Memory Release:** Added memory release to prevent leaks.
-
-**Configurable Timeout:** The check_port function now allows you to configure the timeout.
-
-**Readability Improvements:** The code has been divided into smaller, clearer functions.
-
-**Error Handling:** Added more error handling to increase robustness.
+Input Validation: Beta v1.0 validates user inputs, reducing errors from invalid port numbers or menu selections.
+IPv6 Support: Adds compatibility for IPv6, extending functionality beyond IPv4-only scanning in v0.2.
+Thread Limitation: Introduced a 50-thread cap for safer resource management and consistent performance.
+Memory Management: Addressed potential memory leaks by adding explicit memory release in Beta v1.0.
+Timeout Configuration: Added adjustable timeouts in port scanning for greater user control.
+Code Readability: Refactored the code into smaller, clearer functions, improving maintainability.
+Error Handling: Enhanced error management to make the tool more robust and reliable in unexpected conditions.
+Both versions retain their core functionality of scanning open ports, but Beta v1.0 significantly improves usability, efficiency, and adaptability.
 
 # Installation For Linux
 
