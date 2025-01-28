@@ -2,6 +2,47 @@
 
 The "PortScan" program is a C tool that scans ports on a domain or IP. Users can choose to check common ports, a specific one, or a range. It employs multithreading for speed. After each scan, it displays the port status and asks if the user wants to continue.
 
+# Installation For Linux
+
+Step : 1 Download
+
+```
+git clone https://github.com/byfranke/portscan/
+```
+Step : 2 Move to directory
+```
+cd portscan
+```
+Step : 3 For installing tools in directory
+```
+bash installer.sh
+```
+Step : 4 Run
+```
+portscan
+```
+
+# PortScan for Windows
+
+**Basic properties**
+
+MD5
+```
+6ee09285e8bb9b4908df70cdd3ce8711 
+```
+SHA-1
+```
+53784ee14a389cd40a1ac955cf6dd4c8e83f6f67
+```
+SHA-256
+```
+0aeec39a07f923393055a8d2bda1f829f6264cb00a3dc16c65c96262878f3b44
+```
+
+# Example
+![image](https://github.com/byfranke/portscan/assets/131370932/c070685e-0018-4ae5-8590-d7b964e2d564)
+
+
 **Update PortScan v0.2**
 
 Release: Aug 31, 2023
@@ -49,43 +90,45 @@ Code Readability: Refactored the code into smaller, clearer functions, improving
 Error Handling: Enhanced error management to make the tool more robust and reliable in unexpected conditions.
 Both versions retain their core functionality of scanning open ports, but v0.3 significantly improves usability, efficiency, and adaptability.
 
-# Installation For Linux
+# PortScan Beta Version Update
 
-Step : 1 Download
+Release: Jan 28, 2025
+
+Description:
+The new PortScan Beta Version introduces several major updates inspired by tools like nmap, enhancing interactivity, flexibility, and performance. However, as this is a beta release, it may still contain bugs or unexpected behavior. Users are encouraged to report any issues encountered during usage.
+
+**Key Updates and Features:**
+
+Interactive Command-Line Arguments:
+
+You can now specify options directly when executing the program:
+-o 1: Scan common ports (e.g., 80, 443, 22, etc.).
+-o 2 <port>: Check a specific port.
+-o 3 <start-end>: Scan a range of ports (e.g., 20-9090).
+Example: ./portscan example.com -o 3 20-80 -t 2
+Configurable Timeout:
+
+Adjust the scan timeout using -t. The default timeout is 1 second, but now you can specify longer intervals (e.g., -t 2, -t 3) to avoid triggering IP protection mechanisms.
+Domain and IP Resolution:
+
+Automatically resolves domains to their respective IPv4 or IPv6 addresses before scanning.
+Range-Based Port Scanning:
+
+Added support for specifying port ranges (e.g., 20-8080) for better flexibility in custom scans.
+Improved Thread Management:
+
+Thread limit remains at 50 for efficient resource usage, ensuring performance remains stable during range scans.
+User-Friendly Interface:
+
+Enhanced error handling and validation for incorrect inputs, such as invalid port numbers, ranges, or missing parameters.
+
+**Usage Example:**
 
 ```
-git clone https://github.com/byfranke/portscan/
+./portscan example.com -o 3 20-80 -t 2
 ```
-Step : 2 Move to directory
-```
-cd portscan
-```
-Step : 3 For installing tools in directory
-```
-bash installer.sh
-```
-Step : 4 Run
-```
-portscan
-```
-# PortScan for Windows
+This command scans ports 20 through 80 on example.com with a 2-second timeout between requests.
 
-**Basic properties**
+**Important Note:**
 
-MD5
-```
-6ee09285e8bb9b4908df70cdd3ce8711 
-```
-SHA-1
-```
-53784ee14a389cd40a1ac955cf6dd4c8e83f6f67
-```
-SHA-256
-```
-0aeec39a07f923393055a8d2bda1f829f6264cb00a3dc16c65c96262878f3b44
-```
-
-# Example
-![image](https://github.com/byfranke/portscan/assets/131370932/c070685e-0018-4ae5-8590-d7b964e2d564)
-
-
+As this is a beta version, the program is still in testing and may contain bugs or unexpected behavior. Please use cautiously and only on systems you have permission to scan. Report any issues to help improve future versions!
