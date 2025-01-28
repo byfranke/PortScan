@@ -43,7 +43,7 @@ bash installer.sh or installer_beta.sh
 ```
 Step : 4 Run
 ```
-portscan or port_scanner_beta
+portscan or portscan_beta
 ```
 # PortScan for Windows
 
