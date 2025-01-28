@@ -2,6 +2,8 @@
 
 The "PortScan" program is a C tool that scans ports on a domain or IP. Users can choose to check common ports, a specific one, or a range. It employs multithreading for speed. After each scan, it displays the port status and asks if the user wants to continue.
 
+Note: Unauthorized port scanning may violate legal and privacy standards. Obtain proper authorization before using this tool.
+
 # Installation For Linux
 
 Step : 1 Download
@@ -54,6 +56,7 @@ PortScan v0.2 is a tool written in C to determine open ports on a target system 
 Key Features:
 
 Socket Programming: Leverages C's socket library for creating connections and sending packets to target ports.
+
 Port Status Identification: Deduction of port states (open or closed) based on response packets.
 
 Multithreading: Uses multithreading to accelerate the scanning process by concurrently testing multiple ports, significantly increasing efficiency.
@@ -61,7 +64,6 @@ Multithreading: Uses multithreading to accelerate the scanning process by concur
 Usage Requirements:
 
 Ensure you have the necessary C libraries and compilers correctly set up.
-Note: Unauthorized port scanning may violate legal and privacy standards. Obtain proper authorization before using this tool.
 
 **Update PortScan v0.3**
 
