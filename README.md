@@ -41,19 +41,21 @@ SHA-256
 0aeec39a07f923393055a8d2bda1f829f6264cb00a3dc16c65c96262878f3b44
 ```
 
-# Example
+**Example**
+
+
 ![image](https://github.com/byfranke/portscan/assets/131370932/c070685e-0018-4ae5-8590-d7b964e2d564)
 
 
-**Update PortScan v0.2**
+# Update PortScan v0.2
 
 Release: Aug 31, 2023
 
-Description:
+**Description:**
 
 PortScan v0.2 is a tool written in C to determine open ports on a target system by sending data packets to various ports and analyzing their responses. The tool utilizes C's native socket capabilities for sending and receiving packets, allowing it to infer whether a port is open or closed based on the system's reply.
 
-Key Features:
+**Key Features:**
 
 Socket Programming: Leverages C's socket library for creating connections and sending packets to target ports.
 
@@ -61,19 +63,19 @@ Port Status Identification: Deduction of port states (open or closed) based on r
 
 Multithreading: Uses multithreading to accelerate the scanning process by concurrently testing multiple ports, significantly increasing efficiency.
 
-Usage Requirements:
+**Usage Requirements:**
 
 Ensure you have the necessary C libraries and compilers correctly set up.
 
-**Update PortScan v0.3**
+# Update PortScan v0.3
 
 Release: Jan 28, 2025
 
-Description:
+**Description:**
 
 PortScan v0.3 builds upon the capabilities of version 0.2 with enhanced functionality, reliability, and support for IPv6. This version introduces significant improvements to usability, performance, and code clarity.
 
-Key Features and Improvements:
+**Key Features and Improvements:**
 
 Input Validation: Added validation for user input, including ports and menu options, to ensure correct operation and prevent invalid values.
 
@@ -89,7 +91,7 @@ Improved Code Readability: Code refactored into smaller, modular functions for b
 
 Enhanced Error Handling: Increased robustness with additional error handling for socket failures and invalid operations.
 
-Usage Requirements:
+**Usage Requirements:**
 
 Ensure all required libraries and compilers are set up correctly.
 
