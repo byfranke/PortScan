@@ -7,7 +7,9 @@ Incorporating multithreading techniques, PortScan v0.2 accelerates the scanning 
 
 Ensure you have the necessary C libraries and compilers set up correctly for PortScan v0.2 to run efficiently. Unauthorized port scanning can be illegal and an infringement on others' privacy and security. Always secure the proper authorization before initiating such actions.
 
-# Update Beta V 1.0
+# Update Beta V 1.0 
+
+Release: 28 jan 2025
 
 **Major Improvements Applied:**
 
