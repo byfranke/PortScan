@@ -18,7 +18,7 @@ void print_banner() {
     printf("    |   |  _ \\    __|  __| \\___ \\    __|   _` |  __ \\ \n");
     printf("    ___/  (   |  |     |         |  (     (   |  |   | \n");
     printf("   _|    \\___/  _|    \\__| _____/  \\___| \\__,_| _|  _| \n");
-    printf("              github.com/byfranke Beta V1.0    \n");
+    printf("              github.com/byfranke V0.3        \n");
     printf("\n");
 }
 
