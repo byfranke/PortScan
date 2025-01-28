@@ -18,12 +18,12 @@ Usage Requirements:
 Ensure you have the necessary C libraries and compilers correctly set up.
 Note: Unauthorized port scanning may violate legal and privacy standards. Obtain proper authorization before using this tool.
 
-**Update PortScan Beta v1.0**
+**Update PortScan v0.3**
 
 Release: Jan 28, 2025
 
 Description:
-PortScan Beta v1.0 builds upon the capabilities of version 0.2 with enhanced functionality, reliability, and support for IPv6. This version introduces significant improvements to usability, performance, and code clarity.
+PortScan v0.3 builds upon the capabilities of version 0.2 with enhanced functionality, reliability, and support for IPv6. This version introduces significant improvements to usability, performance, and code clarity.
 
 Key Features and Improvements:
 
@@ -38,16 +38,16 @@ Usage Requirements:
 Ensure all required libraries and compilers are set up correctly.
 Note: Unauthorized port scanning remains subject to legal and ethical considerations. Always secure proper authorization.
 
-**Summary of Changes from v0.2 to Beta v1.0:**
+**Summary of Changes from v0.2 to v0.3:**
 
-Input Validation: Beta v1.0 validates user inputs, reducing errors from invalid port numbers or menu selections.
+Input Validation: v0.3 validates user inputs, reducing errors from invalid port numbers or menu selections.
 IPv6 Support: Adds compatibility for IPv6, extending functionality beyond IPv4-only scanning in v0.2.
 Thread Limitation: Introduced a 50-thread cap for safer resource management and consistent performance.
-Memory Management: Addressed potential memory leaks by adding explicit memory release in Beta v1.0.
+Memory Management: Addressed potential memory leaks by adding explicit memory release in v0.3.
 Timeout Configuration: Added adjustable timeouts in port scanning for greater user control.
 Code Readability: Refactored the code into smaller, clearer functions, improving maintainability.
 Error Handling: Enhanced error management to make the tool more robust and reliable in unexpected conditions.
-Both versions retain their core functionality of scanning open ports, but Beta v1.0 significantly improves usability, efficiency, and adaptability.
+Both versions retain their core functionality of scanning open ports, but v0.3 significantly improves usability, efficiency, and adaptability.
 
 # Installation For Linux
 
