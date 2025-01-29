@@ -46,7 +46,8 @@ install_portscan() {
 
 check_and_update() {
     echo "[*] Checking for the latest version on GitHub..."
-    # Enable extended globbing
+    
+    # Habilita extglob para evitar erro de sintaxe
     shopt -s extglob
 
     GITHUB_REPO="https://github.com/byfranke/PortScan"
@@ -55,9 +56,9 @@ check_and_update() {
     # Clone the latest version
     git clone "$GITHUB_REPO" "$TEMP_DIR"
 
-    # Move old files to obsolete, except installer.sh and obsolete folder
+    # Move old files to obsolete, exceto installer.sh e obsolete folder
     mkdir -p obsolete
-    mv !(installer.sh|obsolete) obsolete/ 2>/dev/null
+    find . -maxdepth 1 ! -name "installer.sh" ! -name "obsolete" -type f -exec mv {} obsolete/ \;
 
     # Move new files to current directory
     mv "$TEMP_DIR"/* ./
