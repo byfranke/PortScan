@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 #define MAX_THREADS 50
+#define MAX_PORTS 100
 
 void print_banner() {
     printf("\n");
@@ -20,7 +21,7 @@ void print_banner() {
     printf("    |   |  _ \\    __|  __| \\___ \\    __|   _` |  __ \\ \n");
     printf("    ___/  (   |  |     |         |  (     (   |  |   | \n");
     printf("   _|    \\___/  _|    \\__| _____/  \\___| \\__,_| _|  _| \n");
-    printf("            github.com/byfranke Beta Version  \n");
+    printf("           github.com/byfranke v0.4 Beta Version  \n");
     printf("\n");
 }
 
@@ -29,16 +30,16 @@ void print_help() {
     printf("Options:\n");
     printf("  -o, --option <option>  Select an option:\n");
     printf("                         1 - Scan common ports\n");
-    printf("                         2 - Scan a specific port\n");
+    printf("                         2 - Scan specific ports (comma-separated)\n");
     printf("                         3 - Scan a range of ports\n");
-    printf("  -p, --port <port>      Specify a port to scan (used with option 2)\n");
+    printf("  -p, --port <ports>     Specify ports to scan (used with option 2, e.g., 80,443,8080)\n");
     printf("  -t, --time <timeout>   Set timeout for port scan (default: 1 second)\n");
     printf("  -h, --help             Show this help message\n");
     printf("  --update               Update the script to the latest version\n");
     printf("\n");
     printf("Examples:\n");
     printf("  portscan example.com -o 1 -t 2\n");
-    printf("  portscan example.com -o 2 -p 80 -t 1\n");
+    printf("  portscan example.com -o 2 -p 80,443,8080 -t 1\n");
     printf("  portscan example.com -o 3 -t 1 1-1000\n");
     printf("  portscan example.com --update\n");
 }
@@ -207,6 +208,48 @@ void scan_common_ports(const char *host, int timeout) {
     printf("Common port scan completed.\n");
 }
 
+void scan_specific_ports(const char *host, const char *ports_str, int timeout) {
+    pthread_t threads[MAX_PORTS];
+    int ports[MAX_PORTS];
+    int port_count = 0;
+    char *token;
+    char *copy = strdup(ports_str);
+
+    token = strtok(copy, ",");
+    while (token != NULL && port_count < MAX_PORTS) {
+        ports[port_count++] = atoi(token);
+        token = strtok(NULL, ",");
+    }
+    free(copy);
+
+    for (int i = 0; i < port_count; i++) {
+        ThreadArgs *args = malloc(sizeof(ThreadArgs));
+        if (!args) {
+            perror("malloc");
+            continue;
+        }
+        args->host = strdup(host);
+        if (!args->host) {
+            perror("strdup");
+            free(args);
+            continue;
+        }
+        args->port = ports[i];
+        args->timeout = timeout;
+        if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
+            perror("pthread_create");
+            free(args->host);
+            free(args);
+        }
+    }
+
+    for (int i = 0; i < port_count; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    printf("Specific port scan completed.\n");
+}
+
 void scan_port_range(const char *host, int start_port, int end_port, int timeout) {
     pthread_t threads[MAX_THREADS];
     int thread_count = 0;
@@ -249,10 +292,11 @@ void scan_port_range(const char *host, int start_port, int end_port, int timeout
     printf("Range port scan completed.\n");
 }
 
-void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, int *start_port, int *end_port, int *specific_port) {
+void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, int *start_port, int *end_port, char **specific_ports) {
     *timeout = 1; 
     *option = 0;
-    *start_port = *end_port = *specific_port = 0;
+    *start_port = *end_port = 0;
+    *specific_ports = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--option") == 0) {
@@ -265,7 +309,7 @@ void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, 
             }
         } else if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--port") == 0) {
             if (i + 1 < argc) {
-                *specific_port = atoi(argv[++i]);
+                *specific_ports = argv[++i];
             }
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             print_help();
@@ -283,7 +327,8 @@ void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, 
 
 int main(int argc, char *argv[]) {
     char *host = NULL;
-    int option, timeout, start_port, end_port, specific_port;
+    int option, timeout, start_port, end_port;
+    char *specific_ports = NULL;
 
     print_banner();
 
@@ -292,7 +337,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    parse_args(argc, argv, &host, &option, &timeout, &start_port, &end_port, &specific_port);
+    parse_args(argc, argv, &host, &option, &timeout, &start_port, &end_port, &specific_ports);
 
     if (!host) {
         printf("Host not specified. Exiting...\n");
@@ -306,7 +351,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (option == 0) {
-        option = 1; 
+        option = 1;
     }
 
     switch (option) {
@@ -314,14 +359,10 @@ int main(int argc, char *argv[]) {
             scan_common_ports(resolved_host, timeout);
             break;
         case 2:
-            if (specific_port > 0 && validate_port(specific_port)) {
-                if (check_port(resolved_host, specific_port, timeout) == 0) {
-                    printf("Port %d is open.\n", specific_port);
-                } else {
-                    printf("Port %d is closed or unreachable.\n", specific_port);
-                }
+            if (specific_ports != NULL) {
+                scan_specific_ports(resolved_host, specific_ports, timeout);
             } else {
-                printf("Invalid port specified.\n");
+                printf("No ports specified. Use -p or --port to specify ports.\n");
             }
             break;
         case 3:
