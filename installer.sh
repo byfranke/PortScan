@@ -6,7 +6,8 @@ print_banner() {
     echo "    |   |  _ \\    __|  __| \\___ \\    __|   _\` |  __ \\ "
     echo "    ___/  (   |  |     |         |  (     (   |  |   | "
     echo "   _|    \\___/  _|    \\__| _____/  \\___| \\__,_| _|  _| "
-    echo "               github.com/byfranke/portscan"
+    echo
+    echo "              github.com/byfranke/portscan"
     echo
 }
 
@@ -45,14 +46,16 @@ install_portscan() {
 
 check_and_update() {
     echo "[*] Checking for the latest version on GitHub..."
-    # Assuming the latest version is in the main branch
+    # Enable extended globbing
+    shopt -s extglob
+
     GITHUB_REPO="https://github.com/byfranke/PortScan"
     TEMP_DIR=$(mktemp -d)
 
     # Clone the latest version
     git clone "$GITHUB_REPO" "$TEMP_DIR"
 
-    # Move old files to obsolete, except installer.sh
+    # Move old files to obsolete, except installer.sh and obsolete folder
     mkdir -p obsolete
     mv !(installer.sh|obsolete) obsolete/ 2>/dev/null
 
