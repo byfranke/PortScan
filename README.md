@@ -101,7 +101,7 @@ Ensure all required libraries and compilers are set up correctly.
 Release: Dec 21, 2024
 
 Description:
-The new PortScan Beta Version introduces several major updates inspired by tools like nmap, enhancing interactivity, flexibility, and performance. However, as this is a beta release, it may still contain bugs or unexpected behavior. Users are encouraged to report any issues encountered during usage.
+The new PortScan v0.4 introduces several major updates inspired by tools like nmap, enhancing interactivity, flexibility, and performance. However, as this is a beta release, it may still contain bugs or unexpected behavior. Users are encouraged to report any issues encountered during usage.
 
 **Key Updates and Features:**
 
