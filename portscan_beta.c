@@ -11,9 +11,13 @@
 #include <pthread.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <poll.h>
+#include <signal.h>
 
 #define MAX_THREADS 50
 #define MAX_PORTS 100
+#define LOG_DEBUG(fmt, ...) fprintf(stderr, "[DEBUG] " fmt "\n", ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) fprintf(stderr, "[ERROR] " fmt "\n", ##__VA_ARGS__)
 
 void print_banner() {
     printf("\n");
@@ -21,7 +25,7 @@ void print_banner() {
     printf("    |   |  _ \\    __|  __| \\___ \\    __|   _` |  __ \\ \n");
     printf("    ___/  (   |  |     |         |  (     (   |  |   | \n");
     printf("   _|    \\___/  _|    \\__| _____/  \\___| \\__,_| _|  _| \n");
-    printf("           github.com/byfranke v0.4 Beta Version  \n");
+    printf("            github.com/byfranke v0.4 Beta Version  \n");
     printf("\n");
 }
 
@@ -47,19 +51,19 @@ void print_help() {
 void update_script() {
     printf("Updating the script...\n");
     if (system("mkdir -p /tmp/portscan_update") != 0) {
-        perror("Failed to create update directory");
+        LOG_ERROR("Failed to create update directory");
         return;
     }
     if (system("git clone https://github.com/byfranke/PortScan /tmp/portscan_update") != 0) {
-        perror("Failed to clone repository");
+        LOG_ERROR("Failed to clone repository");
         return;
     }
     if (system("sudo bash /tmp/portscan_update/installer.sh") != 0) {
-        perror("Failed to run installer script");
+        LOG_ERROR("Failed to run installer script");
         return;
     }
     if (system("rm -rf /tmp/portscan_update") != 0) {
-        perror("Failed to clean up update directory");
+        LOG_ERROR("Failed to clean up update directory");
         return;
     }
     printf("Update completed.\n");
@@ -78,7 +82,7 @@ char* resolve_domain(const char* domain) {
     hints.ai_socktype = SOCK_STREAM;
 
     if (getaddrinfo(domain, NULL, &hints, &res) != 0) {
-        perror("getaddrinfo");
+        LOG_ERROR("getaddrinfo failed");
         return NULL;
     }
 
@@ -93,7 +97,7 @@ char* resolve_domain(const char* domain) {
 
     ip = malloc(INET6_ADDRSTRLEN);
     if (!ip) {
-        perror("malloc");
+        LOG_ERROR("malloc failed");
         freeaddrinfo(res);
         return NULL;
     }
@@ -116,11 +120,13 @@ int check_port(const char *host, int port, int timeout) {
     snprintf(port_str, sizeof(port_str), "%d", port);
 
     if (getaddrinfo(host, port_str, &hints, &res) != 0) {
+        LOG_ERROR("getaddrinfo failed for port %d", port);
         return -1;
     }
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sockfd < 0) {
+        LOG_ERROR("socket creation failed for port %d", port);
         freeaddrinfo(res);
         return -1;
     }
@@ -130,20 +136,18 @@ int check_port(const char *host, int port, int timeout) {
 
     result = connect(sockfd, res->ai_addr, res->ai_addrlen);
     if (result < 0 && errno != EINPROGRESS) {
+        LOG_ERROR("connect failed for port %d", port);
         close(sockfd);
         freeaddrinfo(res);
         return -1;
     }
 
-    fd_set myset;
-    FD_ZERO(&myset);
-    FD_SET(sockfd, &myset);
+    struct pollfd fds;
+    fds.fd = sockfd;
+    fds.events = POLLOUT;
 
-    struct timeval tv;
-    tv.tv_sec = timeout;
-    tv.tv_usec = 0;
-
-    if (select(sockfd + 1, NULL, &myset, NULL, &tv) > 0) {
+    result = poll(&fds, 1, timeout * 1000);
+    if (result > 0 && (fds.revents & POLLOUT)) {
         int so_error;
         socklen_t len = sizeof(so_error);
         getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
@@ -183,19 +187,19 @@ void scan_common_ports(const char *host, int timeout) {
     for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
         if (!args) {
-            perror("malloc");
+            LOG_ERROR("malloc failed");
             continue;
         }
         args->host = strdup(host);
         if (!args->host) {
-            perror("strdup");
+            LOG_ERROR("strdup failed");
             free(args);
             continue;
         }
         args->port = common_ports[i];
         args->timeout = timeout;
         if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
-            perror("pthread_create");
+            LOG_ERROR("pthread_create failed");
             free(args->host);
             free(args);
         }
@@ -217,7 +221,12 @@ void scan_specific_ports(const char *host, const char *ports_str, int timeout) {
 
     token = strtok(copy, ",");
     while (token != NULL && port_count < MAX_PORTS) {
-        ports[port_count++] = atoi(token);
+        int port = atoi(token);
+        if (validate_port(port)) {
+            ports[port_count++] = port;
+        } else {
+            LOG_ERROR("Invalid port: %s", token);
+        }
         token = strtok(NULL, ",");
     }
     free(copy);
@@ -225,19 +234,19 @@ void scan_specific_ports(const char *host, const char *ports_str, int timeout) {
     for (int i = 0; i < port_count; i++) {
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
         if (!args) {
-            perror("malloc");
+            LOG_ERROR("malloc failed");
             continue;
         }
         args->host = strdup(host);
         if (!args->host) {
-            perror("strdup");
+            LOG_ERROR("strdup failed");
             free(args);
             continue;
         }
         args->port = ports[i];
         args->timeout = timeout;
         if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
-            perror("pthread_create");
+            LOG_ERROR("pthread_create failed");
             free(args->host);
             free(args);
         }
@@ -258,19 +267,19 @@ void scan_port_range(const char *host, int start_port, int end_port, int timeout
         for (int i = 0; i < MAX_THREADS && port <= end_port; i++) {
             ThreadArgs *args = malloc(sizeof(ThreadArgs));
             if (!args) {
-                perror("malloc");
+                LOG_ERROR("malloc failed");
                 continue;
             }
             args->host = strdup(host);
             if (!args->host) {
-                perror("strdup");
+                LOG_ERROR("strdup failed");
                 free(args);
                 continue;
             }
             args->port = port;
             args->timeout = timeout;
             if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
-                perror("pthread_create");
+                LOG_ERROR("pthread_create failed");
                 free(args->host);
                 free(args);
             } else {
@@ -325,10 +334,17 @@ void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, 
     }
 }
 
+void handle_signal(int sig) {
+    printf("\nReceived signal %d. Exiting...\n", sig);
+    exit(0);
+}
+
 int main(int argc, char *argv[]) {
     char *host = NULL;
     int option, timeout, start_port, end_port;
     char *specific_ports = NULL;
+
+    signal(SIGINT, handle_signal);
 
     print_banner();
 
@@ -351,7 +367,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (option == 0) {
-        option = 1;
+        option = 1; // Default to common port scan if no option is specified
     }
 
     switch (option) {
