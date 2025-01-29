@@ -147,37 +147,55 @@ PortScan v0.5 further improves upon the previous versions by enhancing performan
 **Key Updates and Features:**
 
 Logging System for Debugging and Error Handling
+
 • Introduced LOG_DEBUG and LOG_ERROR macros for structured logging, allowing users to track errors and debugging information more efficiently.
+
 • Now, all major operations log detailed error messages to stderr, improving troubleshooting.
 
 Replaced select with poll for Better Performance
+
 • The select function has been replaced with poll, which is more scalable and efficient, especially when dealing with a large number of connections.
+
 • Reduces CPU overhead and allows more accurate timeout handling during port scans.
 
 Signal Handling for Controlled Exit (SIGINT)
+
 • Added a signal handler for SIGINT (Ctrl+C), ensuring a graceful exit.
+
 • Prevents memory leaks, avoids orphaned threads, and properly cleans up resources before termination.
 
 Improved Memory Management and Leak Prevention
+
 • Enhanced resolve_domain() to prevent potential memory leaks when allocating IP address buffers.
+
 • Properly frees allocated memory in case of failures or early exits.
+
 • Eliminated unnecessary malloc calls for small string buffers, reducing unnecessary heap allocations.
 
 Enhanced Input Validation and Error Checking
+
 • Now validates all user input, including invalid ports, incorrectly formatted ranges, and non-numeric values.
+
 • Improved error messages to guide users on correct command usage.
 
 Safer and More Efficient Thread Management
+
 • Introduced thread pool logic to avoid creating excessive threads that could lead to system overload.
+
 • Ensures that pthread_create failures are handled properly.
+
 • Optimized range-based scanning to limit active threads dynamically based on available system resources.
 
 Improved IPv6 and IPv4 Compatibility
+
 • Now fully supports both IPv4 and IPv6, including mixed environments.
+
 • Properly detects whether the target system supports IPv6 and adjusts scanning methods accordingly.
 
 Safer Script Updating Mechanism
+
 • The --update feature now includes checksum validation to prevent executing malicious code if the repository is compromised.
+
 • Enhanced error messages for failed updates to inform users of the exact issue.
 
 
