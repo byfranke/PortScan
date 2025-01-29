@@ -69,7 +69,7 @@ Ensure you have the necessary C libraries and compilers correctly set up.
 
 # Update PortScan v0.3
 
-Release: Jun 24, 2024
+Release: Jun 08, 2024
 
 **Description:**
 
