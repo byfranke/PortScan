@@ -24,6 +24,33 @@ void print_banner() {
     printf("\n");
 }
 
+void print_help() {
+    printf("Usage: portscan <domain or IP> [options]\n");
+    printf("Options:\n");
+    printf("  -o, --option <option>  Select an option:\n");
+    printf("                         1 - Scan common ports\n");
+    printf("                         2 - Scan a specific port\n");
+    printf("                         3 - Scan a range of ports\n");
+    printf("  -t, --time <timeout>   Set timeout for port scan (default: 1 second)\n");
+    printf("  -h, --help             Show this help message\n");
+    printf("  --update               Update the script to the latest version\n");
+    printf("\n");
+    printf("Examples:\n");
+    printf("  portscan example.com -o 1 -t 2\n");
+    printf("  portscan example.com -o 2 -t 1 80\n");
+    printf("  portscan example.com -o 3 -t 1 1-1000\n");
+    printf("  portscan example.com --update\n");
+}
+
+void update_script() {
+    printf("Updating the script...\n");
+    system("mkdir -p /tmp/portscan_update");
+    system("git clone https://github.com/byfranke/PortScan /tmp/portscan_update");
+    system("sudo bash /tmp/portscan_update/installer.sh");
+    system("rm -rf /tmp/portscan_update");
+    printf("Update completed.\n");
+}
+
 bool validate_port(int port) {
     return port >= 0 && port <= 65535;
 }
@@ -215,10 +242,20 @@ void parse_args(int argc, char *argv[], char **host, int *option, int *timeout, 
     *start_port = *end_port = 0;
 
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
-            *option = atoi(argv[++i]);
-        } else if (strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
-            *timeout = atoi(argv[++i]);
+        if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--option") == 0) {
+            if (i + 1 < argc) {
+                *option = atoi(argv[++i]);
+            }
+        } else if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--time") == 0) {
+            if (i + 1 < argc) {
+                *timeout = atoi(argv[++i]);
+            }
+        } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            print_help();
+            exit(0);
+        } else if (strcmp(argv[i], "--update") == 0) {
+            update_script();
+            exit(0);
         } else if (strchr(argv[i], '-') != NULL && isdigit(argv[i][0])) {
             sscanf(argv[i], "%d-%d", start_port, end_port);
         } else {
@@ -234,7 +271,7 @@ int main(int argc, char *argv[]) {
     print_banner();
 
     if (argc < 2) {
-        printf("Usage: %s <domain or IP> -o <option> -t <timeout> [range]\n", argv[0]);
+        print_help();
         return 1;
     }
 
@@ -249,6 +286,10 @@ int main(int argc, char *argv[]) {
     if (!resolved_host) {
         printf("Failed to resolve host. Exiting...\n");
         return 1;
+    }
+
+    if (option == 0) {
+        option = 1; // Default to common port scan if no option is specified
     }
 
     switch (option) {
