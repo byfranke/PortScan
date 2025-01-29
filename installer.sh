@@ -6,7 +6,7 @@ print_banner() {
     echo "    |   |  _ \\    __|  __| \\___ \\    __|   _\` |  __ \\ "
     echo "    ___/  (   |  |     |         |  (     (   |  |   | "
     echo "   _|    \\___/  _|    \\__| _____/  \\___| \\__,_| _|  _| "
-    echo "              github.com/byfranke/portscan"
+    echo "               github.com/byfranke/portscan"
     echo
 }
 
@@ -17,7 +17,8 @@ echo
 echo "1) Install Current Version"
 echo "2) Install Beta Version"
 echo "3) Install Old Version"
-echo "4) Exit"
+echo "4) Check for Latest Version and Update"
+echo "5) Exit"
 echo
 
 read -p "Enter your choice: " choice
@@ -40,6 +41,26 @@ install_portscan() {
     else
         echo "[!] Compilation failed. Please check for errors."
     fi
+}
+
+check_and_update() {
+    echo "[*] Checking for the latest version on GitHub..."
+    # Assuming the latest version is in the main branch
+    GITHUB_REPO="https://github.com/byfranke/PortScan"
+    TEMP_DIR=$(mktemp -d)
+
+    # Clone the latest version
+    git clone "$GITHUB_REPO" "$TEMP_DIR"
+
+    # Move old files to obsolete, except installer.sh
+    mkdir -p obsolete
+    mv !(installer.sh|obsolete) obsolete/ 2>/dev/null
+
+    # Move new files to current directory
+    mv "$TEMP_DIR"/* ./
+    rm -rf "$TEMP_DIR"
+
+    echo "[+] Updated to the latest version. Old files moved to 'obsolete'."
 }
 
 case $choice in
@@ -83,6 +104,9 @@ case $choice in
         fi
         ;;
     4)
+        check_and_update
+        ;;
+    5)
         echo "Exiting..."
         exit 0
         ;;
