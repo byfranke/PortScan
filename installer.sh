@@ -41,13 +41,13 @@ check_and_update() {
 
     git clone "$GITHUB_REPO" "$TEMP_DIR"
 
-    mkdir -p obsolete
-    find . -maxdepth 1 ! -name "installer.sh" ! -name "obsolete" -type f -exec mv {} obsolete/ \;
+    mkdir -p Obsolete
+    find . -maxdepth 1 ! -name "installer.sh" ! -name "Obsolete" -type f -exec mv {} Obsolete/ \;
 
-    mv "$TEMP_DIR"/* ./
+    mv "$TEMP_DIR"/* ./ 2>/dev/null
     rm -rf "$TEMP_DIR"
 
-    echo "[+] Updated to the latest version. Old files moved to 'obsolete'."
+    echo "[+] Updated to the latest version. Old files moved to 'Obsolete'."
 }
 
 show_menu() {
@@ -57,7 +57,7 @@ show_menu() {
         echo
         echo "1) Install Current Version"
         echo "2) Install Beta Version"
-        echo "3) Install Old Version"
+        echo "3) Install Obsolete Version"
         echo "4) Check for Latest Version and Update"
         echo "5) Exit"
         echo
@@ -79,10 +79,10 @@ show_menu() {
                 fi
                 ;;
             3)
-                OLD_VERSIONS_DIR="Old Version"
-                if [ -d "$OLD_VERSIONS_DIR" ]; then
+                OBSOLETE_DIR="Obsolete"
+                if [ -d "$OBSOLETE_DIR" ]; then
                     echo "Available old versions:"
-                    files=("$OLD_VERSIONS_DIR"/*.c)
+                    files=("$OBSOLETE_DIR"/*.c)
                     if [ ${#files[@]} -eq 0 ]; then
                         echo "[!] No old versions found."
                         continue
@@ -100,7 +100,7 @@ show_menu() {
                         echo "[!] Invalid selection!"
                     fi
                 else
-                    echo "[!] Old Version folder not found!"
+                    echo "[!] Obsolete folder not found!"
                 fi
                 ;;
             4)
