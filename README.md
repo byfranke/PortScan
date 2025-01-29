@@ -96,7 +96,7 @@ Enhanced Error Handling: Increased robustness with additional error handling for
 Ensure all required libraries and compilers are set up correctly.
 
 
-# PortScan Beta Version Update
+# PortScan v0.4
 
 Release: Jan 28, 2025
 
@@ -134,6 +134,8 @@ Enhanced error handling and validation for incorrect inputs, such as invalid por
 ./portscan example.com -o 3 20-80 -t 2
 ```
 This command scans ports 20 through 80 on example.com with a 2-second timeout between requests.
+
+# PortScan Beta Version Update
 
 **Important Note:**
 
