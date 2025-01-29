@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define MAX_THREADS 50
 
@@ -23,7 +24,7 @@ void print_banner() {
     printf("\n");
 }
 
-int validate_port(int port) {
+bool validate_port(int port) {
     return port >= 0 && port <= 65535;
 }
 
@@ -50,13 +51,19 @@ char* resolve_domain(const char* domain) {
     }
 
     ip = malloc(INET6_ADDRSTRLEN);
+    if (!ip) {
+        perror("malloc");
+        freeaddrinfo(res);
+        return NULL;
+    }
+
     inet_ntop(res->ai_family, addr, ip, INET6_ADDRSTRLEN);
 
     freeaddrinfo(res);
     return ip;
 }
 
-int check_port(char *host, int port, int timeout) {
+int check_port(const char *host, int port, int timeout) {
     struct addrinfo hints, *res;
     int sockfd, result;
     char port_str[6];
@@ -124,20 +131,33 @@ void *thread_check_port(void *args) {
         printf("Port %d is open.\n", targs->port);
     }
     free(targs->host);
-    free(args);
+    free(targs);
     return NULL;
 }
 
-void scan_common_ports(char *host, int timeout) {
+void scan_common_ports(const char *host, int timeout) {
     int common_ports[] = {21, 22, 23, 25, 53, 80, 110, 135, 143, 443, 587, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080};
     pthread_t threads[sizeof(common_ports) / sizeof(common_ports[0])];
 
     for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
+        if (!args) {
+            perror("malloc");
+            continue;
+        }
         args->host = strdup(host);
+        if (!args->host) {
+            perror("strdup");
+            free(args);
+            continue;
+        }
         args->port = common_ports[i];
         args->timeout = timeout;
-        pthread_create(&threads[i], NULL, thread_check_port, args);
+        if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
+            perror("pthread_create");
+            free(args->host);
+            free(args);
+        }
     }
 
     for (int i = 0; i < sizeof(common_ports) / sizeof(common_ports[0]); i++) {
@@ -147,19 +167,33 @@ void scan_common_ports(char *host, int timeout) {
     printf("Common port scan completed.\n");
 }
 
-void scan_port_range(char *host, int start_port, int end_port, int timeout) {
+void scan_port_range(const char *host, int start_port, int end_port, int timeout) {
     pthread_t threads[MAX_THREADS];
     int thread_count = 0;
 
     for (int port = start_port; port <= end_port;) {
         for (int i = 0; i < MAX_THREADS && port <= end_port; i++) {
             ThreadArgs *args = malloc(sizeof(ThreadArgs));
+            if (!args) {
+                perror("malloc");
+                continue;
+            }
             args->host = strdup(host);
+            if (!args->host) {
+                perror("strdup");
+                free(args);
+                continue;
+            }
             args->port = port;
             args->timeout = timeout;
-            pthread_create(&threads[i], NULL, thread_check_port, args);
-            thread_count++;
-            port++;
+            if (pthread_create(&threads[i], NULL, thread_check_port, args) != 0) {
+                perror("pthread_create");
+                free(args->host);
+                free(args);
+            } else {
+                thread_count++;
+                port++;
+            }
         }
 
         for (int i = 0; i < thread_count; i++) {
