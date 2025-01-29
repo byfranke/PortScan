@@ -69,7 +69,7 @@ Ensure you have the necessary C libraries and compilers correctly set up.
 
 # Update PortScan v0.3
 
-Release: Jan 28, 2025
+Release: Jun 24, 2024
 
 **Description:**
 
@@ -98,7 +98,7 @@ Ensure all required libraries and compilers are set up correctly.
 
 # Update PortScan v0.4
 
-Release: Jan 28, 2025
+Release: Dec 21, 2024
 
 Description:
 The new PortScan Beta Version introduces several major updates inspired by tools like nmap, enhancing interactivity, flexibility, and performance. However, as this is a beta release, it may still contain bugs or unexpected behavior. Users are encouraged to report any issues encountered during usage.
@@ -134,6 +134,80 @@ Enhanced error handling and validation for incorrect inputs, such as invalid por
 ./portscan example.com -o 3 20-80 -t 2
 ```
 This command scans ports 20 through 80 on example.com with a 2-second timeout between requests.
+
+# Update PortScan v0.5
+
+Release: Jan 28, 2025
+
+Description:
+PortScan v0.5 further improves upon the previous versions by enhancing performance, security, and usability. This update introduces better error handling, safer memory management, optimized scanning methods, and a structured logging system. Additionally, the tool now includes signal handling for a graceful exit, reducing the risk of leaving orphaned threads or open sockets.
+
+**Key Updates and Features:**
+
+Logging System for Debugging and Error Handling
+• Introduced LOG_DEBUG and LOG_ERROR macros for structured logging, allowing users to track errors and debugging information more efficiently.
+• Now, all major operations log detailed error messages to stderr, improving troubleshooting.
+
+Replaced select with poll for Better Performance
+• The select function has been replaced with poll, which is more scalable and efficient, especially when dealing with a large number of connections.
+• Reduces CPU overhead and allows more accurate timeout handling during port scans.
+
+Signal Handling for Controlled Exit (SIGINT)
+• Added a signal handler for SIGINT (Ctrl+C), ensuring a graceful exit.
+• Prevents memory leaks, avoids orphaned threads, and properly cleans up resources before termination.
+
+Improved Memory Management and Leak Prevention
+• Enhanced resolve_domain() to prevent potential memory leaks when allocating IP address buffers.
+• Properly frees allocated memory in case of failures or early exits.
+• Eliminated unnecessary malloc calls for small string buffers, reducing unnecessary heap allocations.
+
+Enhanced Input Validation and Error Checking
+• Now validates all user input, including invalid ports, incorrectly formatted ranges, and non-numeric values.
+• Improved error messages to guide users on correct command usage.
+
+Safer and More Efficient Thread Management
+• Introduced thread pool logic to avoid creating excessive threads that could lead to system overload.
+• Ensures that pthread_create failures are handled properly.
+• Optimized range-based scanning to limit active threads dynamically based on available system resources.
+
+Improved IPv6 and IPv4 Compatibility
+• Now fully supports both IPv4 and IPv6, including mixed environments.
+• Properly detects whether the target system supports IPv6 and adjusts scanning methods accordingly.
+
+Safer Script Updating Mechanism
+• The --update feature now includes checksum validation to prevent executing malicious code if the repository is compromised.
+• Enhanced error messages for failed updates to inform users of the exact issue.
+
+
+**Usage Example:** 
+
+Basic Scan for Common Ports (21, 22, 80, 443, etc.)
+
+```
+./portscan example.com -o 1 -t 2
+```
+
+Scans common ports with a 2-second timeout between requests.
+
+Scanning Specific Ports (80, 443, 8080)
+
+```
+./portscan example.com -o 2 -p 80,443,8080 -t 1
+```
+
+Scans ports 80, 443, and 8080 with a 1-second timeout.
+
+Scanning a Port Range (20-1000)
+
+```
+./portscan example.com -o 3 20-1000 -t 1
+```
+
+Scans ports 20 through 1000 with a 1-second timeout between each connection attempt.
+
+**Conclusion:**
+
+PortScan v0.5 is a more efficient, secure, and user-friendly tool for network scanning. By implementing better logging, memory management, thread optimization, and input validation, this version significantly enhances reliability and usability.
 
 # PortScan Beta Version Update
 
