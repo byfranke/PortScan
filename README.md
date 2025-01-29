@@ -96,7 +96,7 @@ Enhanced Error Handling: Increased robustness with additional error handling for
 Ensure all required libraries and compilers are set up correctly.
 
 
-# PortScan v0.4
+# Update PortScan v0.4
 
 Release: Jan 28, 2025
 
