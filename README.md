@@ -100,7 +100,8 @@ Ensure all required libraries and compilers are set up correctly.
 
 Release: Dec 21, 2024
 
-Description:
+**Description:**
+
 The new PortScan v0.4 introduces several major updates inspired by tools like nmap, enhancing interactivity, flexibility, and performance. However, as this is a beta release, it may still contain bugs or unexpected behavior. Users are encouraged to report any issues encountered during usage.
 
 **Key Updates and Features:**
@@ -139,7 +140,8 @@ This command scans ports 20 through 80 on example.com with a 2-second timeout be
 
 Release: Jan 28, 2025
 
-Description:
+**Description:**
+
 PortScan v0.5 further improves upon the previous versions by enhancing performance, security, and usability. This update introduces better error handling, safer memory management, optimized scanning methods, and a structured logging system. Additionally, the tool now includes signal handling for a graceful exit, reducing the risk of leaving orphaned threads or open sockets.
 
 **Key Updates and Features:**
