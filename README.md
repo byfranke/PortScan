@@ -132,7 +132,7 @@ Enhanced error handling and validation for incorrect inputs, such as invalid por
 **Usage Example:**
 
 ```
-./portscan example.com -o 3 20-80 -t 2
+portscan example.com -o 3 20-80 -t 2
 ```
 This command scans ports 20 through 80 on example.com with a 2-second timeout between requests.
 
@@ -204,7 +204,7 @@ Safer Script Updating Mechanism
 Basic Scan for Common Ports (21, 22, 80, 443, etc.)
 
 ```
-./portscan example.com -o 1 -t 2
+portscan example.com -o 1 -t 2
 ```
 
 Scans common ports with a 2-second timeout between requests.
@@ -212,7 +212,7 @@ Scans common ports with a 2-second timeout between requests.
 Scanning Specific Ports (80, 443, 8080)
 
 ```
-./portscan example.com -o 2 -p 80,443,8080 -t 1
+portscan example.com -o 2 -p 80,443,8080 -t 1
 ```
 
 Scans ports 80, 443, and 8080 with a 1-second timeout.
@@ -220,7 +220,7 @@ Scans ports 80, 443, and 8080 with a 1-second timeout.
 Scanning a Port Range (20-1000)
 
 ```
-./portscan example.com -o 3 20-1000 -t 1
+portscan example.com -o 3 20-1000 -t 1
 ```
 
 Scans ports 20 through 1000 with a 1-second timeout between each connection attempt.
