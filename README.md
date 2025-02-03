@@ -109,10 +109,15 @@ The new PortScan v0.4 introduces several major updates inspired by tools like nm
 Interactive Command-Line Arguments:
 
 You can now specify options directly when executing the program:
--o 1: Scan common ports (e.g., 80, 443, 22, etc.).
--o 2 <port>: Check a specific port.
--o 3 <start-end>: Scan a range of ports (e.g., 20-9090).
+
+- **-o 1:** Scan common ports (e.g., 80, 443, 22, etc.).
+
+- **-o 2 <port>:** Check a specific port.
+
+- **-o 3 <start-end>:** Scan a range of ports (e.g., 20-9090).
+
 Example: ./portscan example.com -o 3 20-80 -t 2
+
 Configurable Timeout:
 
 Adjust the scan timeout using -t. The default timeout is 1 second, but now you can specify longer intervals (e.g., -t 2, -t 3) to avoid triggering IP protection mechanisms.
@@ -148,55 +153,55 @@ PortScan v0.5 further improves upon the previous versions by enhancing performan
 
 Logging System for Debugging and Error Handling
 
-• Introduced LOG_DEBUG and LOG_ERROR macros for structured logging, allowing users to track errors and debugging information more efficiently.
+- Introduced LOG_DEBUG and LOG_ERROR macros for structured logging, allowing users to track errors and debugging information more efficiently.
 
-• Now, all major operations log detailed error messages to stderr, improving troubleshooting.
+- Now, all major operations log detailed error messages to stderr, improving troubleshooting.
 
 Replaced select with poll for Better Performance
 
-• The select function has been replaced with poll, which is more scalable and efficient, especially when dealing with a large number of connections.
+- The select function has been replaced with poll, which is more scalable and efficient, especially when dealing with a large number of connections.
 
-• Reduces CPU overhead and allows more accurate timeout handling during port scans.
+- Reduces CPU overhead and allows more accurate timeout handling during port scans.
 
 Signal Handling for Controlled Exit (SIGINT)
 
-• Added a signal handler for SIGINT (Ctrl+C), ensuring a graceful exit.
+- Added a signal handler for SIGINT (Ctrl+C), ensuring a graceful exit.
 
-• Prevents memory leaks, avoids orphaned threads, and properly cleans up resources before termination.
+- Prevents memory leaks, avoids orphaned threads, and properly cleans up resources before termination.
 
 Improved Memory Management and Leak Prevention
 
-• Enhanced resolve_domain() to prevent potential memory leaks when allocating IP address buffers.
+- Enhanced resolve_domain() to prevent potential memory leaks when allocating IP address buffers.
 
-• Properly frees allocated memory in case of failures or early exits.
+- Properly frees allocated memory in case of failures or early exits.
 
-• Eliminated unnecessary malloc calls for small string buffers, reducing unnecessary heap allocations.
+- Eliminated unnecessary malloc calls for small string buffers, reducing unnecessary heap allocations.
 
 Enhanced Input Validation and Error Checking
 
-• Now validates all user input, including invalid ports, incorrectly formatted ranges, and non-numeric values.
+- Now validates all user input, including invalid ports, incorrectly formatted ranges, and non-numeric values.
 
-• Improved error messages to guide users on correct command usage.
+- Improved error messages to guide users on correct command usage.
 
 Safer and More Efficient Thread Management
 
-• Introduced thread pool logic to avoid creating excessive threads that could lead to system overload.
+- Introduced thread pool logic to avoid creating excessive threads that could lead to system overload.
 
-• Ensures that pthread_create failures are handled properly.
+- Ensures that pthread_create failures are handled properly.
 
-• Optimized range-based scanning to limit active threads dynamically based on available system resources.
+- Optimized range-based scanning to limit active threads dynamically based on available system resources.
 
 Improved IPv6 and IPv4 Compatibility
 
-• Now fully supports both IPv4 and IPv6, including mixed environments.
+- Now fully supports both IPv4 and IPv6, including mixed environments.
 
-• Properly detects whether the target system supports IPv6 and adjusts scanning methods accordingly.
+- Properly detects whether the target system supports IPv6 and adjusts scanning methods accordingly.
 
 Safer Script Updating Mechanism
 
-• The --update feature now includes checksum validation to prevent executing malicious code if the repository is compromised.
+- The --update feature now includes checksum validation to prevent executing malicious code if the repository is compromised.
 
-• Enhanced error messages for failed updates to inform users of the exact issue.
+- Enhanced error messages for failed updates to inform users of the exact issue.
 
 
 **Usage Example:** 
@@ -239,8 +244,11 @@ As this is a beta version, the program is still in testing and may contain bugs 
 
 This tool is designed for educational and testing purposes only. The creator strictly discourages and disclaims any responsibility for its use in unauthorized or malicious activities. Always obtain explicit permission before deploying this tool in any environment.
 
-# Donations
-
+## Donations
 If you find these tools useful and would like to support ongoing development and maintenance, please consider making a donation. Your contribution helps ensure that these tools are regularly updated and improved, benefiting the cybersecurity community. Any amount is greatly appreciated and will make a significant difference in supporting this project. Thank you for considering supporting this work!
 
-**Address Bitcoin:**  bc1qkdh3eqpj87q5hlhc7pvm025hmsd9zp2kadxf76
+- **Address Bitcoin:**
+```bash
+bc1qkdh3eqpj87q5hlhc7pvm025hmsd9zp2kadxf76
+```
+
