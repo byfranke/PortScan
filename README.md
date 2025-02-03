@@ -106,9 +106,9 @@ The new PortScan v0.4 introduces several major updates inspired by tools like nm
 
 ## Key Updates and Features:
 
-Interactive Command-Line Arguments:
+**Interactive Command-Line Arguments:**
 
-You can now specify options directly when executing the program:
+You can now specify options directly when executing the program.
 
 - **-o 1:** Scan common ports (e.g., 80, 443, 22, etc.).
 
