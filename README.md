@@ -116,7 +116,11 @@ You can now specify options directly when executing the program.
 
 - **-o 3 <start-end>:** Scan a range of ports (e.g., 20-9090).
 
-Example: ./portscan example.com -o 3 20-80 -t 2
+**Example:**
+
+```bash
+./portscan example.com -o 3 20-80 -t 2
+```
 
 **Configurable Timeout:**
 
