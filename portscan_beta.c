@@ -59,7 +59,7 @@ void update_script() {
         LOG_ERROR("Failed to clone repository");
         return;
     }
-    if (system("sudo bash /tmp/portscan_update/installer.sh") != 0) {
+    if (system("sudo bash /tmp/portscan_update/setup.sh") != 0) {
         LOG_ERROR("Failed to run installer script");
         return;
     }
