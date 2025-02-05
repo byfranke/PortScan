@@ -17,7 +17,7 @@ cd portscan
 ```
 Step : 3 For installing tools in directory
 ```bash
-bash installer.sh
+bash setup.sh
 ```
 Step : 4 Run
 ```bash
