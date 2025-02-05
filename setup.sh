@@ -42,7 +42,7 @@ check_and_update() {
     git clone "$GITHUB_REPO" "$TEMP_DIR"
 
     mkdir -p Obsolete
-    find . -maxdepth 1 ! -name "installer.sh" ! -name "Obsolete" -type f -exec mv {} Obsolete/ \;
+    find . -maxdepth 1 ! -name "er.sh" ! -name "Obsolete" -type f -exec mv {} Obsolete/ \;
 
     mv "$TEMP_DIR"/* ./ 2>/dev/null
     rm -rf "$TEMP_DIR"
