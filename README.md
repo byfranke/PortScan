@@ -252,3 +252,9 @@ As this is a beta version, the program is still in testing and may contain bugs 
 
 This tool is designed for educational and testing purposes only. The creator strictly discourages and disclaims any responsibility for its use in unauthorized or malicious activities. Always obtain explicit permission before deploying this tool in any environment.
 
+
+## Donation Support
+
+This tool is maintained through community support. Help keep it active:
+
+[![Donate](https://img.shields.io/badge/Support-Development-blue?style=for-the-badge&logo=github)](https://donate.stripe.com/28o8zQ2wY3Dr57G001)
